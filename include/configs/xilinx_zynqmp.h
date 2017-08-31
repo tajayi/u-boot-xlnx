@@ -13,7 +13,7 @@
 
 #define CONFIG_REMAKE_ELF
 
-/* #define CONFIG_ARMV8_SWITCH_TO_EL1 */
+#define CONFIG_ARMV8_SWITCH_TO_EL1
 
 #define CONFIG_SYS_NO_FLASH
 
@@ -252,6 +252,9 @@
 		"bootm 6000000 0x1000000 $fdt_addr\0" \
 	"jtagboot=tftpboot 80000 Image && tftpboot $fdt_addr system.dtb && " \
 		 "tftpboot 6000000 rootfs.cpio.ub && booti 80000 6000000 $fdt_addr\0" \
+	"qemu_boot32=setenv initrd_high 0x20000000 && " \
+		"setenv bootargs earlyprintk clk_ignore_unused nosmp console=ttyPS0,115200 earlycon && " \
+		"bootm 0x6000000\0" \
 	"nosmp=setenv bootargs $bootargs maxcpus=1\0" \
 	"nfsroot=setenv bootargs $bootargs root=/dev/nfs nfsroot=$serverip:/mnt/sata,tcp ip=$ipaddr:$serverip:$serverip:255.255.255.0:zynqmp:eth0:off rw\0" \
 	"sdroot0=setenv bootargs $bootargs root=/dev/mmcblk0p2 rw rootwait\0" \
@@ -267,7 +270,8 @@
 #endif
 
 #define CONFIG_PREBOOT		"run setup"
-#define CONFIG_BOOTCOMMAND	"run $modeboot"
+#define CONFIG_BOOTCOMMAND	"run qemu_boot32"
+/* #define CONFIG_BOOTCOMMAND	"run $modeboot" */
 
 #define CONFIG_BOARD_LATE_INIT
 

@@ -132,17 +132,19 @@ int __maybe_unused invoke_smc(u32 pm_api_id, u32 arg0, u32 arg1, u32 arg2,
 	struct pt_regs regs;
 
 	regs.regs[0] = pm_api_id;
-	regs.regs[1] = ((u64)arg1 << 32) | arg0;
-	regs.regs[2] = ((u64)arg3 << 32) | arg2;
+	regs.regs[1] = arg0;
+	regs.regs[2] = arg1;
+	regs.regs[3] = arg2;
+	regs.regs[4] = arg3;
 
 	smc_call(&regs);
 
 	if (ret_payload != NULL) {
 		ret_payload[0] = (u32)regs.regs[0];
-		ret_payload[1] = upper_32_bits(regs.regs[0]);
-		ret_payload[2] = (u32)regs.regs[1];
-		ret_payload[3] = upper_32_bits(regs.regs[1]);
-		ret_payload[4] = (u32)regs.regs[2];
+		ret_payload[1] = (u32)regs.regs[1];
+		ret_payload[2] = (u32)regs.regs[2];
+		ret_payload[3] = (u32)regs.regs[3];
+		ret_payload[4] = (u32)regs.regs[4];
 	}
 
 	return regs.regs[0];

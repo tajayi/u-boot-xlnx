@@ -253,7 +253,10 @@
 	"jtagboot=tftpboot 80000 Image && tftpboot $fdt_addr system.dtb && " \
 		 "tftpboot 6000000 rootfs.cpio.ub && booti 80000 6000000 $fdt_addr\0" \
 	"qemu_boot32=setenv initrd_high 0x20000000 && " \
-		"setenv bootargs earlyprintk clk_ignore_unused nosmp console=ttyPS0,115200 earlycon && " \
+		"setenv bootargs earlyprintk nosmp console=ttyPS0,115200 earlycon && " \
+		"bootm 0x6000000\0" \
+	"qemu_boot32Smp=setenv initrd_high 0x20000000 && " \
+		"setenv bootargs earlyprintk console=ttyPS0,115200 earlycon && " \
 		"bootm 0x6000000\0" \
 	"nosmp=setenv bootargs $bootargs maxcpus=1\0" \
 	"nfsroot=setenv bootargs $bootargs root=/dev/nfs nfsroot=$serverip:/mnt/sata,tcp ip=$ipaddr:$serverip:$serverip:255.255.255.0:zynqmp:eth0:off rw\0" \

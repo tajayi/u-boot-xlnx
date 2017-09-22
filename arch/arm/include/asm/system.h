@@ -87,8 +87,7 @@
 /*
  * SCTLR_EL1 bits definitions
  */
-#define SCTLR_EL1_RES1		(3 << 28 | 3 << 22 | 1 << 20 |\
-				 1 << 11) /* Reserved, RES1                   */
+#define SCTLR_EL1_RES1		(3 << 28 | 3 << 22 | 1 << 11) /* Reserved, RES1                   */
 #define SCTLR_EL1_UCI_DIS	(0 << 26) /* Cache instruction disabled       */
 #define SCTLR_EL1_EE_LE		(0 << 25) /* Exception Little-endian          */
 #define SCTLR_EL1_WXN_DIS	(0 << 19) /* Write permission is not XN       */

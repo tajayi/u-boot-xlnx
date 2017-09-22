@@ -81,35 +81,32 @@ static const struct {
 
 int chip_id(unsigned char id)
 {
-	struct pt_regs regs;
+	u32 ret_payload[PAYLOAD_ARG_CNT];
+	u32 ret;
 	int val = -EINVAL;
 
 	if (current_el() != 3) {
-		regs.regs[0] = ZYNQMP_SIP_SVC_CSU_DMA_CHIPID;
-		regs.regs[1] = 0;
-		regs.regs[2] = 0;
-		regs.regs[3] = 0;
+		ret = invoke_smc(ZYNQMP_SIP_SVC_CSU_DMA_CHIPID, 0, 0, 0, 0,
+				 ret_payload);
 
-		smc_call(&regs);
-
+		if (ret)
+			panic("CHIPID is not found!\n");
 		/*
-		 * SMC returns:
-		 * regs[0][31:0]  = status of the operation
-		 * regs[0][63:32] = CSU.IDCODE register
-		 * regs[1][31:0]  = CSU.version register
+		 * invoke_smc returns:
+		 * ret_payload[0] = status of the operation
+		 * ret_payload[1] = CSU.IDCODE register
+		 * ret_payload[2] = CSU.version register
 		 */
 		switch (id) {
 		case IDCODE:
-			regs.regs[0] = upper_32_bits(regs.regs[0]);
-			regs.regs[0] &= ZYNQMP_CSU_IDCODE_DEVICE_CODE_MASK |
+			ret_payload[1] &= ZYNQMP_CSU_IDCODE_DEVICE_CODE_MASK |
 					ZYNQMP_CSU_IDCODE_SVD_MASK;
-			regs.regs[0] >>= ZYNQMP_CSU_IDCODE_SVD_SHIFT;
-			val = regs.regs[0];
+			ret_payload[1] >>= ZYNQMP_CSU_IDCODE_SVD_SHIFT;
+			val = ret_payload[1];
 			break;
 		case VERSION:
-			regs.regs[1] = lower_32_bits(regs.regs[1]);
-			regs.regs[1] &= ZYNQMP_CSU_SILICON_VER_MASK;
-			val = regs.regs[1];
+			ret_payload[2] &= ZYNQMP_CSU_SILICON_VER_MASK;
+			val = ret_payload[2];
 			break;
 		default:
 			printf("%s, Invalid Req:0x%x\n", __func__, id);
@@ -145,6 +142,7 @@ static char *zynqmp_get_silicon_idcode_name(void)
 		if (zynqmp_devices[i].id == id)
 			return zynqmp_devices[i].name;
 	}
+	printf("%s, Invalid id:0x%x\n", __func__, id);
 	return "unknown";
 }
 #endif

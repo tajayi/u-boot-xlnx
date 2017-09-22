@@ -181,7 +181,8 @@
 /* Initial environment variables */
 #ifndef CONFIG_EXTRA_ENV_SETTINGS
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"kernel_addr=0x80000\0" \
+	"kernel_addr=0x6000000\0" \
+	"initrd_high=0x20000000\0" \
 	"initrd_addr=0xa00000\0" \
 	"initrd_size=0x2000000\0" \
 	"fdt_addr=4000000\0" \
@@ -193,7 +194,7 @@
 	"kernel_size=0x1e00000\0" \
 	"fdt_size=0x80000\0" \
 	"bootenv=uEnv.txt\0" \
-	"bootargs=earlycon clk_ignore_unused\0" \
+	"bootargs=earlycon clk_ignore_unused console=ttyPS0,115200\0" \
 	"loadbootenv=load mmc $sdbootdev:$partid ${loadbootenv_addr} ${bootenv}\0" \
 	"importbootenv=echo Importing environment from SD ...; " \
 		"env import -t ${loadbootenv_addr} $filesize\0" \
@@ -205,7 +206,8 @@
 		"fdt set /timer clock-frequency <240000> && " \
 		"fdt set /amba/i2c_clk clock-frequency <240000> && " \
 		"booti 80000 - f000000\0" \
-	"netboot=tftpboot 10000000 image.ub && bootm\0" \
+	"ethaddr=b2:03:a3:10:b1:44\0" \
+	"netboot=dhcp && setenv serverip 10.118.30.38 && tftpboot $kernel_addr fit-image.itb && bootm $kernel_addr\0" \
 	"qspiboot=sf probe 0 0 0 && sf read $fdt_addr $fdt_offset $fdt_size && " \
 		  "sf read $kernel_addr $kernel_offset $kernel_size && " \
 		  "booti $kernel_addr - $fdt_addr\0" \
@@ -252,12 +254,7 @@
 		"bootm 6000000 0x1000000 $fdt_addr\0" \
 	"jtagboot=tftpboot 80000 Image && tftpboot $fdt_addr system.dtb && " \
 		 "tftpboot 6000000 rootfs.cpio.ub && booti 80000 6000000 $fdt_addr\0" \
-	"qemu_boot32=setenv initrd_high 0x20000000 && " \
-		"setenv bootargs earlyprintk nosmp console=ttyPS0,115200 earlycon && " \
-		"bootm 0x6000000\0" \
-	"qemu_boot32Smp=setenv initrd_high 0x20000000 && " \
-		"setenv bootargs earlyprintk console=ttyPS0,115200 earlycon && " \
-		"bootm 0x6000000\0" \
+	"qemu_boot32=bootm $kernel_addr\0" \
 	"nosmp=setenv bootargs $bootargs maxcpus=1\0" \
 	"nfsroot=setenv bootargs $bootargs root=/dev/nfs nfsroot=$serverip:/mnt/sata,tcp ip=$ipaddr:$serverip:$serverip:255.255.255.0:zynqmp:eth0:off rw\0" \
 	"sdroot0=setenv bootargs $bootargs root=/dev/mmcblk0p2 rw rootwait\0" \
@@ -273,7 +270,7 @@
 #endif
 
 #define CONFIG_PREBOOT		"run setup"
-#define CONFIG_BOOTCOMMAND	"run qemu_boot32"
+#define CONFIG_BOOTCOMMAND	"run netboot"
 /* #define CONFIG_BOOTCOMMAND	"run $modeboot" */
 
 #define CONFIG_BOARD_LATE_INIT
@@ -346,7 +343,7 @@
 
 #define ENV_MEM_LAYOUT_SETTINGS \
 	"fdt_high=10000000\0" \
-	"initrd_high=10000000\0" \
+	"initrd_high=0x20000000\0" \
 	"fdt_addr_r=0x40000000\0" \
 	"pxefile_addr_r=0x10000000\0" \
 	"kernel_addr_r=0x18000000\0" \

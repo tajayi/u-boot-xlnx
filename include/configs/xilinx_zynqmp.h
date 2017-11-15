@@ -222,9 +222,8 @@
 			"run uenvcmd; " \
 		"fi\0" \
 	"sdboot=mmc dev $sdbootdev && mmcinfo && run uenvboot || run sdroot$sdbootdev; " \
-		"load mmc $sdbootdev:$partid $fdt_addr system.dtb && " \
-		"load mmc $sdbootdev:$partid $kernel_addr Image && " \
-		"booti $kernel_addr - $fdt_addr\0" \
+	        "load mmc $sdbootdev:$partid $kernel_addr fit-image.itb && " \
+	        "bootm $kernel_addr\0" \
 	"emmcboot=run sdboot\0" \
 	"nandboot=nand info && nand read $fdt_addr $fdt_offset $fdt_size && " \
 		  "nand read $kernel_addr $kernel_offset $kernel_size && " \
@@ -270,7 +269,7 @@
 #endif
 
 #define CONFIG_PREBOOT		"run setup"
-#define CONFIG_BOOTCOMMAND	"run netboot"
+#define CONFIG_BOOTCOMMAND	"run nosmp && run netboot"
 /* #define CONFIG_BOOTCOMMAND	"run $modeboot" */
 
 #define CONFIG_BOARD_LATE_INIT

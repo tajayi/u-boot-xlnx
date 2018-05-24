@@ -269,7 +269,7 @@
 #endif
 
 #define CONFIG_PREBOOT		"run setup"
-#define CONFIG_BOOTCOMMAND	"run nosmp && run netboot"
+#define CONFIG_BOOTCOMMAND	"run nosmp && run sdboot"
 /* #define CONFIG_BOOTCOMMAND	"run $modeboot" */
 
 #define CONFIG_BOARD_LATE_INIT
